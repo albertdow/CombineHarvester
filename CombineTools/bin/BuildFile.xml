@@ -2,6 +2,7 @@
 <bin file="Example2.cpp" name="Example2"></bin>
 <bin file="Example3.cpp" name="Example3"></bin>
 <bin file="GamGamExample.cpp" name="GamGamExample"></bin>
+<bin file="PlotNuisances.cpp" name="PlotNuisances"></bin>
 <bin file="ImpactsTable.cpp" name="ImpactsTable"></bin>
 <bin file="LimitCompare.cpp" name="LimitCompare"></bin>
 <bin file="MSSMExample.cpp" name="MSSMExample"></bin>
