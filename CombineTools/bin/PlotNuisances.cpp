@@ -17,6 +17,12 @@ int main(int argc, char** argv) {
   SetStyle();
 
   TString filename(argv[1]);
+  TString dirShapes(argv[2]);
+
+  if (argc!=3) {
+    std::cout << "Usage of the program : PlotNuisances [filename] [RooFitResult folder : fit_b or fit_s]" << std::endl;
+    exit(-1);
+  }
 
   std::vector<TString> index = {
     "0",
@@ -77,14 +83,14 @@ int main(int argc, char** argv) {
     exit(-1);
   }
 
-  RooFitResult * fitres = (RooFitResult*)file->Get("fit_b");
+  RooFitResult * fitres = (RooFitResult*)file->Get(dirShapes);
   RooArgList  list = fitres->floatParsFinal();
 
   std::string command = "mkdir " + std::string(argv[1]);
 
   system(command.c_str());
   
-  int nPeriod = 30;
+  int nPeriod = 31;
 
   int n = list.getSize();
   int nCycles = n/nPeriod;
