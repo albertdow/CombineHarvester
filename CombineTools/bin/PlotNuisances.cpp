@@ -11,6 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "TString.h"
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+
+using std::cout;
+using std::endl;
+using std::setw;
 
 int main(int argc, char** argv) {
 
@@ -23,6 +30,8 @@ int main(int argc, char** argv) {
     std::cout << "Usage of the program : PlotNuisances [filename] [RooFitResult folder : fit_b or fit_s]" << std::endl;
     exit(-1);
   }
+
+  std::ofstream ofs (argv[1], std::ofstream::out);
 
   std::vector<TString> index = {
     "0",
@@ -100,9 +109,9 @@ int main(int argc, char** argv) {
   std::cout << std::endl;
   std::cout << std::endl;
 
+  TCanvas * canv = MakeCanvas("canv","",1000,700);
   for (int iCycle=0; iCycle<=nCycles; ++iCycle) {
     std::cout << "Cycle = " << iCycle << std::endl;
-    TCanvas * canv = MakeCanvas("canv","",1000,700);
     TH1D * hist = new TH1D("hist","",nPeriod,0,double(nPeriod));
     TH1D * histPull = new TH1D("histPull","",nPeriod,0,double(nPeriod)); 
     TH1D * histConst = new TH1D("histConst","",nPeriod,0,double(nPeriod)); 
@@ -124,7 +133,8 @@ int main(int argc, char** argv) {
       if (name=="muV"||name=="muggH"||name=="alpha"||name=="mutautau") continue;
       double central = var->getVal();
       double error = var->getError();
-      std::cout << name << " = " << central << " +/- " << error << std::endl; 
+      std::cout << name << " = "; printf("%5.3f +/- %5.3f\n",central,error);
+      ofs << name << " = " << setw(5) << central << " +/- " << setw(5) << error << std::endl; 
       double lower = central - error;
       double upper = central + error;
       centralPar.push_back(central);
@@ -187,12 +197,18 @@ int main(int argc, char** argv) {
 
     canv->Update();
     canv->Print(filename+"/nuisances_"+index.at(iCycle)+".png");
+    if (iCycle==0)
+      canv->Print(filename+".pdf(","pdf");
+    else if (iCycle==nCycles)
+      canv->Print(filename+".pdf)","pdf");
+    else
+      canv->Print(filename+".pdf","pdf");
     delete line;
     delete hist;
-    delete canv;
     std::cout << "----------------------------------------------------------" << std::endl;
   }
-  
+  delete canv;
+  ofs.close();
 
 
   //  RooRealVar*
