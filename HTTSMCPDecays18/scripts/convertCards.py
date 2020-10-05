@@ -13,6 +13,7 @@ cp_bins = {
         "tt_201$_higgs_0A1_Rho_and_0A1_0A1": 4,
         "tt_201$_higgs_A1_Rho": 4,
         "tt_201$_higgs_A1_A1": 4,
+        "tt_201$_higgs_A1_A1_PolVec": 4,
         "tt_201$_higgs_Pi_Rho_Mixed": 10,
         "tt_201$_higgs_Pi_Pi": 4,
         "tt_201$_higgs_Pi_A1_Mixed": 4,
@@ -22,6 +23,7 @@ cp_bins = {
         "tt_201$_zttEmbed_0A1_Rho_and_0A1_0A1": 4,
         "tt_201$_zttEmbed_A1_Rho": 4,
         "tt_201$_zttEmbed_A1_A1": 4,
+        "tt_201$_zttEmbed_A1_A1_PolVec": 4,
         "tt_201$_zttEmbed_Pi_Rho_Mixed": 10,
         "tt_201$_zttEmbed_Pi_Pi": 4,
         "tt_201$_zttEmbed_Pi_A1_Mixed": 4,
@@ -31,6 +33,7 @@ cp_bins = {
         "tt_201$_jetFakes_0A1_Rho_and_0A1_0A1": 4,
         "tt_201$_jetFakes_A1_Rho": 4,
         "tt_201$_jetFakes_A1_A1": 4,
+        "tt_201$_jetFakes_A1_A1_PolVec": 4,
         "tt_201$_jetFakes_Pi_Rho_Mixed": 10,
         "tt_201$_jetFakes_Pi_Pi": 4,
         "tt_201$_jetFakes_Pi_A1_Mixed": 4,
@@ -50,6 +53,37 @@ cp_bins = {
         "mt_mupi_fakes_201$": 8,
         "mt_mua1_fakes_201$": 4,
         "mt_mu0a1_fakes_201$": 4,
+
+        "et_ztt_201$": 1,
+        "et_fakes_201$": 1,
+        "et_murho_sig_201$": 10,
+        "et_mupi_sig_201$": 8,
+        "et_mua1_sig_201$": 4,
+        "et_mu0a1_sig_201$": 4,
+        "et_murho_ztt_201$": 10,
+        "et_mupi_ztt_201$": 8,
+        "et_mua1_ztt_201$": 4,
+        "et_mu0a1_ztt_201$": 4,
+        "et_murho_fakes_201$": 10,
+        "et_mupi_fakes_201$": 8,
+        "et_mua1_fakes_201$": 4,
+        "et_mu0a1_fakes_201$": 4,
+}
+
+ss_bins = {
+
+        "tt_201$_zttEmbed": 1,
+        "tt_201$_jetFakes": 1,
+        "tt_201$_higgs_Rho_Rho": 10,
+        "tt_201$_higgs_0A1_Rho_and_0A1_0A1": 4,
+        "tt_201$_higgs_A1_Rho": 4,
+        "tt_201$_higgs_A1_A1": 4,
+        "tt_201$_higgs_Pi_Rho_Mixed": 10,
+        "tt_201$_higgs_Pi_Pi": 4,
+        "tt_201$_higgs_Pi_A1_Mixed": 4,
+        "tt_201$_higgs_Pi_0A1_Mixed": 4,
+        "tt_201$_higgs_A1_0A1": 4,
+        "tt_201$_zttEmbed_Rho_Rho": 10,
 }
 
 def MergeXBins(hist, nxbins):
@@ -170,11 +204,11 @@ def getHistogramAndWriteToFile(infile,outfile,dirname,write_dirname):
             histo.Write()
           if nxbins>1 and not skip and not rename:
             print 'rebinning for ', dirname, key.GetName()
-            if '_mupi_' not in dirname and '_Pi_Pi' not in dirname and not key.GetName().startswith('jetFakes'): histo =  MergeXBins(histo,nxbins)
+            if '_mupi_' not in dirname and '_Pi_Pi' not in dirname and 'PolVec' not in dirname and not key.GetName().startswith('jetFakes'): histo =  MergeXBins(histo,nxbins)
             else: histo =  Symmetrise(histo,nxbins)
           if nxbins>1 and rename:
             print 'rebinning for ', dirname, key.GetName()
-            if '_mupi_' not in dirname and '_Pi_Pi' not in dirname and not key.GetName().startswith('jetFakes'): histo =  MergeXBins(histo,nxbins)
+            if '_mupi_' not in dirname and '_Pi_Pi' not in dirname and 'PolVec' not in dirname and not key.GetName().startswith('jetFakes'): histo =  MergeXBins(histo,nxbins)
             else: histo =  Symmetrise(histo,nxbins)
             histo.SetName(histo.GetName()+'_merged')
           outfile.cd()
@@ -182,6 +216,28 @@ def getHistogramAndWriteToFile(infile,outfile,dirname,write_dirname):
           ROOT.gDirectory.cd(dirname)
           print 'Writing ', dirname, histo.GetName()
           histo.Write()
+          ROOT.gDirectory.cd('/')
+
+def MergeWH(infile,outfile,dirname):
+    directory = infile.Get(dirname)
+    year='2018'
+    if '2016' in dirname: year='2016'
+    if '2017' in dirname: year='2017'
+    for key in directory.GetListOfKeys():
+        histo = directory.Get(key.GetName()).Clone()
+        if 'WplusH' not in key.GetName(): continue
+        if isinstance(histo,ROOT.TH1D) or isinstance(histo,ROOT.TH1F):
+          print histo.GetName()
+          histo2 = directory.Get(key.GetName().replace('plus','minus'))
+          print histo, histo2
+          print histo.Integral(), histo2.Integral()
+          histo.Add(histo2)
+          print histo.Integral()
+          outfile.cd()
+          if not ROOT.gDirectory.GetDirectory(dirname): ROOT.gDirectory.mkdir(dirname)
+          ROOT.gDirectory.cd(dirname)
+          print 'Writing ', dirname, histo.GetName()
+          histo.Write(key.GetName().replace('plus',''), ROOT.TObject.kOverwrite)
           ROOT.gDirectory.cd('/')
 
 parser = argparse.ArgumentParser()
@@ -198,4 +254,5 @@ for key in original_file.GetListOfKeys():
         #if 'murho' not in key.GetName() or 'sig' not in key.GetName(): continue
         dirname=key.GetName()
         getHistogramAndWriteToFile(original_file,output_file,key.GetName(),dirname)
+        #MergeWH(output_file,output_file,dirname)
 

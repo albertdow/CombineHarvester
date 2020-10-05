@@ -1,9 +1,12 @@
+# run combined years plots using:
+#python3 scripts/run_draw1d_cpdecays_ztt.py --channel mt --year 2018  --mode postfit --datacard shapes_ztt_cmb.root --cmb_years
+
 import oyaml as yaml
 import pandas as pd
 import numpy as np
 import argparse
 
-from plotting import (
+from plotting_ztt import (
     draw_1d, 
     create_df,
     var_kw,
@@ -20,8 +23,9 @@ def parse_arguments():
     )
     parser = argparse.ArgumentParser(epilog=epilog)
 
+
     parser.add_argument(
-        "--channel", default="tt", choices=["tt", "mt","et"],
+        "--channel", default="tt", choices=["tt", "mt"],
         help="Which channel to use",
     )
     parser.add_argument(
@@ -75,7 +79,7 @@ def parse_arguments():
 
 def draw1d_cpdecays(
     channel, year, draw_signals, signal_scale, ff, embedding, mode,
-    datacard, alt_datacard, cmb_years,
+    datacard, alt_datacard, cmb_years
 ):
 
     # Plotting SM and PS template
@@ -94,21 +98,21 @@ def draw1d_cpdecays(
         ch_kw = yaml.safe_load(f)
     if ff: # always use FF
         ch_kw = {}
-        with open("scripts/plot_kw_postfit.yaml", "r") as f:
+        with open("scripts/plot_kw_postfit_ztt.yaml", "r") as f:
             ch_kw = yaml.safe_load(f)
-    if embedding: # always use embedding
-        for ch, proc in ch_kw.items():
-            if ch in ["tt", "mt", "et", "em",]:
-                proc["EmbedZTT"] = ["EmbedZTT"]
-                del proc["ZTT"]
+    #if embedding: # always use embedding
+    #    for ch, proc in ch_kw.items():
+    #        if ch in ["tt", "mt", "et", "em",]:
+    #            proc["EmbedZTT"] = ["EmbedZTT"]
+    #            del proc["ZTT"]
 
     # Histogram processes to load in
     # By default we use fake factors and embedding
     if embedding and ff:
         if channel == "tt":
             processes = ['data_obs', 'EmbedZTT', 'ZL', 'TTT', 'VVT', 'jetFakes','Wfakes']
-        elif channel == "mt" or channel == "et":
-            processes = ['data_obs', 'EmbedZTT', 'ZL', 'TTT', 'VVT', 'jetFakes']
+        elif channel == "mt":
+            processes = ['data_obs', 'ZTT', 'ZL', 'TTT', 'VVT', 'jetFakes']
     elif ff:
         processes = ['data_obs', 'ZTT', 'ZL', 'TTT', 'VVT', 'jetFakes', 'EWKZ',]
     elif embedding:
@@ -134,11 +138,12 @@ def draw1d_cpdecays(
     if channel == "tt":
         bins_to_plot = list(range(1,12))
         bins_to_plot = [1,2,3,7]
-    elif channel == "mt" or channel == "et":
+    elif channel == "mt":
         bins_to_plot = list(range(1,7))
-        #bins_to_plot = [1,2,3,4]
+        bins_to_plot = [3,4,5,6,30,40,50,60]
     for bin_number in bins_to_plot:
-        category = nbins_kw[channel][bin_number][3]
+        #category = nbins_kw[channel][bin_number][3]
+        category = 'ztt'
         # Initialise empty and change depending on category bellow
         plot_var = ""
 
@@ -150,7 +155,7 @@ def draw1d_cpdecays(
             # MVA score plots for background categories
             if channel == "tt":
                 plot_var = "BDT_score"
-            elif channel == "mt" or channel == "et":
+            elif channel == "mt":
                 plot_var = "NN_score"
             partial_blind = False
             blind = False
@@ -160,7 +165,7 @@ def draw1d_cpdecays(
             # signal inclusive category, added blind option
             if channel == "tt":
                 plot_var = "BDT_score"
-            elif channel == "mt" or channel == "et":
+            elif channel == "mt":
                 plot_var = "NN_score"
             partial_blind = False
             blind = True # blind all of data for signal category
@@ -169,9 +174,9 @@ def draw1d_cpdecays(
         else:
             # 'unrolled' category plots
             plot_var = "Bin_number"
-            partial_blind = True # unblind only first window of 'unrolled'
+            partial_blind = False # unblind only first window of 'unrolled'
             blind = False
-            unrolled = True
+            unrolled = False
             norm_bins = False
 
 
@@ -214,7 +219,7 @@ def draw1d_cpdecays(
             signal_scale=signal_scale, ch_kw=ch_kw, process_kw=process_kw, 
             var_kw=var_kw, leg_kw=leg_kw, unrolled=unrolled, norm_bins=norm_bins,
             nbins=nbins_kw[channel][bin_number], mcstat=True, mcsyst=True,
-            logy=True, sm_bkg_ratio=True, postfix=mode,
+            logy=False, sm_bkg_ratio=True, postfix=mode,
         )
 
 if __name__ == "__main__":
