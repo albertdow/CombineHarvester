@@ -3,12 +3,11 @@
 
 Workspaces are located at 
 
-/nfs/dust/cms/user/rasp/CMSSW/CMSSW_10_2_13/src/CombineHarvester/HTTSMCPDecays18/output'
+/nfs/dust/cms/user/rasp/CMSSW/CMSSW_10_2_13/src/CombineHarvester/HTTSMCPDecays18/output
 
 Copy the directory with workspaces to your project area first
 
-    `cp -R /nfs/dust/cms/user/rasp/CMSSW/CMSSW_10_2_13/src/CombineHarvester/HT\
-TSMCPDecays18/output $CMSSW_BASE/src/CombineHarvester/HTTSMCPDecays18`
+    `cp -R /nfs/dust/cms/user/rasp/CMSSW/CMSSW_10_2_13/src/CombineHarvester/HTTSMCPDecays18/output $CMSSW_BASE/src/CombineHarvester/HTTSMCPDecays18`
     
 # Running GoF tests
     
