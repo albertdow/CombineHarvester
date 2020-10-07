@@ -88,9 +88,6 @@ void Plot(TString workspace = "etau_htt_bkg_et",
     std::cout << "x[" << iB << "] = " << xbins[iB] << std::endl;
   //  return;
 
-  float bkg_scale = 1.0;
-  if (WS=="htt_et_2017_1_13TeV"&&!postFit) bkg_scale = 0.93;
-
   TH1F * ZTT = new TH1F("ZTT","",nBins,xbins);
   TH1F * ZLL = new TH1F("ZLL","",nBins,xbins);
   TH1F * Fakes = new TH1F("Fakes","",nBins,xbins);
@@ -103,7 +100,7 @@ void Plot(TString workspace = "etau_htt_bkg_et",
     Fakes->SetBinContent(iB,Fakes_->GetBinContent(iB));
     TT->SetBinContent(iB,TT_->GetBinContent(iB));
     VV->SetBinContent(iB,VV_->GetBinContent(iB));
-    TOTAL->SetBinContent(iB,bkg_scale*TOTAL_->GetBinContent(iB));
+    TOTAL->SetBinContent(iB,TOTAL_->GetBinContent(iB));
     ZTT->SetBinError(iB,ZTT_->GetBinError(iB));
     ZLL->SetBinError(iB,ZLL_->GetBinError(iB));
     Fakes->SetBinError(iB,Fakes_->GetBinError(iB));
@@ -306,8 +303,8 @@ void Plot(TString workspace = "etau_htt_bkg_et",
   ratioH->GetYaxis()->SetTitleSize(0.15);
   ratioH->GetYaxis()->SetTitle("Obs./Exp.");
 
-  float yRatioMin = 0.7001;
-  float yRatioMax = 1.2999;
+  float yRatioMin = 0.9001;
+  float yRatioMax = 1.0999;
   if (postFit) {
     yRatioMin = 0.95001;
     yRatioMax = 1.04999;
