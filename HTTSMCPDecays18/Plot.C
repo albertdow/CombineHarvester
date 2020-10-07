@@ -165,7 +165,6 @@ void Plot(TString workspace = "etau_htt_bkg_et",
 
   for (int iB=1; iB<=nBins; ++iB) {
     ZTT->SetBinError(iB,0.);
-    ZTT->SetBinContent(iB,bkg_scale*ZTT->GetBinContent(iB));
     Fakes->SetBinError(iB,0.);
     ZLL->SetBinError(iB,0.);
     VV->SetBinError(iB,0.);
@@ -303,15 +302,14 @@ void Plot(TString workspace = "etau_htt_bkg_et",
   ratioH->GetYaxis()->SetTitleSize(0.15);
   ratioH->GetYaxis()->SetTitle("Obs./Exp.");
 
-  float yRatioMin = 0.9001;
-  float yRatioMax = 1.0999;
+  float yRatioMin = 0.8999;
+  float yRatioMax = 1.1001;
   if (postFit) {
     yRatioMin = 0.95001;
     yRatioMax = 1.04999;
   }
 
   ratioH->GetYaxis()->SetRangeUser(yRatioMin,yRatioMax);
-
 
   for (int iB=1; iB<=nBins; ++iB) {
     float x1 = histData->GetBinContent(iB);
