@@ -877,8 +877,10 @@ int main(int argc, char** argv) {
   ConvertShapesToLnN(cb.cp().channel({"et_2016","et_2017","et_2018"}).bin_id({2}),"CMS_htt_ZLShape_et_1prong1pi_13TeV",0.); 
   ConvertShapesToLnN(cb.cp().channel({"et_2016","et_2017","et_2018"}).process({"EmbedZTT"}).bin_id({1,2,4}),"CMS_scale_t_1prong_13TeV",0.); 
   ConvertShapesToLnN(cb.cp().channel({"et_2016","et_2017","et_2018"}).process({"EmbedZTT"}).bin_id({1,2}),"CMS_scale_t_3prong_13TeV",0.); 
+  ConvertShapesToLnN(cb.cp().channel({"et_2016","et_2017","et_2018"}).process({"jetFakes"}).bin_id({3,4,5,6}),"ff_et_wjets_met_closure_syst_njets0",0.); 
+  ConvertShapesToLnN(cb.cp().channel({"et_2016","et_2017","et_2018"}).process({"jetFakes"}).bin_id({3,4,5,6}),"ff_et_wjets_met_closure_syst_njets1",0.); 
+  ConvertShapesToLnN(cb.cp().channel({"et_2016","et_2017","et_2018"}).process({"jetFakes"}).bin_id({3,4,5,6}),"ff_et_wjets_met_closure_syst_njets2",0.); 
   
-
   // remove uncertainties which are dominated by statistical fluctuations so are unphysical
   cb.cp().channel({"et_2016","et_2017","et_2018"}).syst_name(jes_systs).process({"ZL"}).bin_id({5}).ForEachSyst([](ch::Systematic *sys) {
         sys->set_type("lnN");
