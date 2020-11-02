@@ -312,7 +312,7 @@ if args.POI == 'alpha':
   latex.SetNDC()
   latex.SetTextSize(0.04)
   latex.SetTextAlign(12)
-  latex.DrawLatex(.7,.9,"0^{+} vs 0^{-} = %.2f#sigma" % significance)
+#  latex.DrawLatex(.7,.9,"0^{+} vs 0^{-} = %.2f#sigma" % significance)
   print "0^{+} vs 0^{-} = %.3f#sigma" % significance
   print 'max sigma = ', max_significance
   print 'best vs CP-odd sigma = ', ps_significance
@@ -532,7 +532,7 @@ if len(other_scans) >= 3:
         legend.SetNColumns(2)
 
 #if args.POI == 'alpha': legend.AddEntry(main_scan['func'], args.main_label + ': #alpha = %.1f#circ{}^{#plus %.1f#circ}_{#minus %.1f#circ}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
-if args.POI == 'alpha': legend.AddEntry(main_scan['func'], args.main_label + ': #alpha = %.5f#circ{}^{#plus %.5f#circ}_{#minus %.5f#circ}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
+if args.POI == 'alpha': legend.AddEntry(main_scan['func'], args.main_label + ': #alpha = %.0f#circ{}^{#plus %.0f#circ}_{#minus %.0f#circ}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
 else: legend.AddEntry(main_scan['func'], args.main_label + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (val_nom[0], val_nom[1], abs(val_nom[2])), 'L')
 for i, other in enumerate(other_scans):
     #legend.AddEntry(other['func'], other_scans_opts[i][1] + ': %.2f{}^{#plus %.2f}_{#minus %.2f}' % (other['val'][0], other['val'][1], abs(other['val'][2])), 'L')
