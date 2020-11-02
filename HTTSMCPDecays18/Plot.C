@@ -5,7 +5,7 @@
 //
 void Plot(TString workspace = "etau_htt_bkg_et",
 	  TString WS = "htt_et_2018_2_13TeV",
-	  bool postFit = false,
+	  bool postFit = true,
 	  bool logY = false) {
 
   float frameScale = 0.0;

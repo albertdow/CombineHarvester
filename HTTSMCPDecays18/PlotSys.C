@@ -1,42 +1,118 @@
 #include "HttStylesNew.cc"
+// +++++++++ systematics +++++++++ 
 // CMS_htt_boson_reso_met_13TeV
 // CMS_htt_boson_scale_met_13TeV
-// CMS_scale_mu_13TeV
+// CMS_scale_met_unclustered_13TeV
+// CMS_scale_e_13TeV
 // CMS_scale_t_1prong_13TeV
 // CMS_scale_t_1prong1pizero_13TeV
 // CMS_scale_t_3prong_13TeV
+// CMS_res_j_13TeV
 // CMS_scale_j_FlavorQCD_13TeV
 // CMS_scale_j_RelativeBal_13TeV
 // CMS_scale_j_HF_13TeV
 // CMS_scale_j_BBEC1_13TeV
 // CMS_scale_j_EC2_13TeV
 // CMS_scale_j_Absolute_13TeV
-// CMS_scale_j_Absolute_2018_13TeV
-// CMS_scale_j_HF_2018_13TeV
-// CMS_scale_j_EC2_2018_13TeV
-// CMS_scale_j_RelativeSample_2018_13TeV
-// CMS_scale_j_BBEC1_2018_13TeV
-// CMS_res_j_13TeV
+// CMS_scale_j_Absolute_[year]_13TeV
+// CMS_scale_j_HF_[year]_13TeV
+// CMS_scale_j_EC2_[year]_13TeV
+// CMS_scale_j_RelativeSample_[year]_13TeV
+// CMS_scale_j_BBEC1_[year]_13TeV
+//
+// ++++++++++ Directories ++++++++++++++
+// /nfs/dust/cms/user/rasp/storage/cardinia/2016/OutputDNNet/Sep1-PUB/predictions_2016
+// /nfs/dust/cms/user/rasp/storage/cardinia/2017/OutputDNNet/Sep1-PUB/predictions_2017
+// /nfs/dust/cms/user/rasp/storage/cardinia/2018/OutputDNNet/Sep1-PUB/predictions_2018
+//
+// +++++++ Templates +++++++
+// et-NOMINAL_ntuple_DY.root      
+// et-NOMINAL_ntuple_TT.root     
+// et-NOMINAL_ntuple_VV.root     
+// et-NOMINAL_ntuple_EWKZ.root 
+// et-NOMINAL_ntuple_ggH125.root
+// et-NOMINAL_ntuple_EMB.root 
+// et-NOMINAL_ntuple_W.root 
+// et-NOMINAL_ntuple_qqH125.root
+// et-NOMINAL_ntuple_WH125.root
+// et-NOMINAL_ntuple_HToWW.root   
+// et-NOMINAL_ntuple_ZH125.root
+void getHistoParameters(TString variable, int &nbins, float &xmin, float &xmax) {
+  if (variable=="jpt1"||variable=="jpt2") {
+    nbins = 25;
+    xmin = 30;
+    xmax = 530;
+  }
+  if (variable=="puppimet") {
+    nbins = 30;
+    xmin = 0;
+    xmax = 300;
+  }
+  if (variable=="njets") {
+    nbins = 8;
+    xmin = -0.5;
+    xmax = 7.5;
+  }
+}
+bool ProcessSystematics(TString process, TString sysName) {
+  bool isExist = true;
+  if (process=="EMB") { 
+    if (sysName.Contains("CMS_scale_j"))
+      isExist = false;
+    if (sysName.Contains("CMS_res_j"))
+      isExist = false;
+    if (sysName.Contains("CMS_htt_boson"))
+      isExist = false;
+    if (sysName.Contains("CMS_scale_met"))
+      isExist = false;
+  }
+  if (process=="TT"&&process=="VV") {
+    if (sysName.Contains("CMS_htt_boson"))
+      isExist = false;
+  }
+  if (process=="DY"||process=="W"||process=="ggH125"||process=="qqH125") {
+    if (sysName.Contains("CMS_scale_met"))
+      isExist = false;    
+  }
+  return isExist;
+} 
 
-void PlotSys() {
+void PlotSys(TFile * file = NULL,
+	     TString era = "2018",
+	     TString process = "EMB",
+	     TString varName = "predicted_prob",
+	     TString xtitle = "DNN",
+	     TString ytitle = "Events",
+	     int nBins =      20,
+	     float xmin =      0,
+	     float xmax =      1,
+	     TString sysName = "CMS_scale_e_13TeV",
+	     TString categoryCut = "",
+	     bool outputPdf = false,
+	     TString pageType = "") {
 
-  TString dirName = "/nfs/dust/cms/user/rasp/Run/Run2018/CP/debug/";
-  TString fileName = "GluGluHToTauTauUncorrDecays_M125";
-  TString varName = "puppimet";
-  TString sysName  = "CMS_scale_mu_13TeV";
   TString header = sysName;
-  TString cuts = "os>0.5&&byMediumDeepTau2017v2p1VSjet_2>0.5";
+  TString Weight("weight*");
+  TString Cuts("trg_singleelectron>0.5&&pt_1>26&&TMath::Abs(eta_1)<2.1&&pt_2>20&&TMath::Abs(eta_2)<2.3&&os>0.5&&puppimt_1<50");
 
-  TString ytitle("Events");
-  TString xtitle("Puppi E_{T}^{mis} [GeV]");
+  if (era=="2017") 
+    Cuts = "pt_1>25&&TMath::Abs(eta_1)<2.1&&pt_2>20&&TMath::Abs(eta_2)<2.3&&os>0.5&&puppimt_1<50&&((trg_singleelectron>0.5&&pt_1>28)||(trg_etaucross>0.5&&pt_1>25&&pt_2>35&&TMath::Abs(eta_2)<2.1))";
+  if (era=="2018")
+    Cuts = "pt_1>25&&TMath::Abs(eta_1)<2.1&&pt_2>20&&TMath::Abs(eta_2)<2.3&&os>0.5&&puppimt_1<50&&((trg_singleelectron>0.5&&pt_1>33)||(trg_etaucross>0.5&&pt_1>25&&pt_2>35&&TMath::Abs(eta_2)<2.1))";
 
-  int nBins =      20;
-  float xmin =      0;
-  float xmax =    200;
+  Cuts += "&&nbtag==0";
+  Cuts += categoryCut;
+
+  if (varName=="jpt_1"||varName=="jeta_1") {
+    Cuts += "&&njets>0";
+  }
+  if (varName=="jpt_2"||varName=="jeta_2"||varName=="mjj"||varName=="jdeta") {
+    Cuts += "&&njets>1";
+  }
+
 
   SetStyle();
   gStyle->SetErrorX(0);
-  TFile * file = new TFile(dirName+"/"+fileName+".root");
 
   TTree * treeNominal = (TTree*)file->Get("TauCheck");
   TTree * treeUp = (TTree*)file->Get("TauCheck_"+sysName+"Up");
@@ -47,14 +123,23 @@ void PlotSys() {
   TH1D * histDown = new TH1D("histDown","",nBins, xmin,xmax);
 
   TCanvas * dummy = new TCanvas("dummy","",600,600);
-  treeNominal->Draw(varName+">>histNominal",cuts);
-  treeUp->Draw(varName+">>histUp",cuts);
-  treeDown->Draw(varName+">>histDown",cuts);
+  treeNominal->Draw(varName+">>histNominal",Cuts);
+  treeUp->Draw(varName+">>histUp",Cuts);
+  treeDown->Draw(varName+">>histDown",Cuts);
   float yMax = histUp->GetMaximum();
   if (histNominal->GetMaximum()>yMax)
     yMax = histNominal->GetMaximum();
   if (histDown->GetMaximum()>yMax)
     yMax = histDown->GetMaximum();
+
+  delete dummy;
+
+  float xUp = histUp->GetSum()/histNominal->GetSum();
+  float xDown = histDown->GetSum()/histNominal->GetSum();
+
+  std::cout << std::endl;
+  printf("lnN   %5.3f/%5.3f\n",xUp,xDown);
+  std::cout << std::endl;
 
   histUp->GetYaxis()->SetRangeUser(0.01,1.1*yMax);
   histNominal->SetLineColor(1);
@@ -79,7 +164,8 @@ void PlotSys() {
   //  ratioCentral->SetMarkerStyle(21);
   //  ratioCentral->SetMarkerSize(0);
 
-
+  float ratioMax = -1;
+  float ratioMin = 10000;
   for (int iB=1; iB<=nBins; ++iB) {
     histUp->SetBinError(iB,0); 
     histDown->SetBinError(iB,0); 
@@ -94,6 +180,10 @@ void PlotSys() {
     }
     ratioUp->SetBinContent(iB,xratioUp);
     ratioDown->SetBinContent(iB,xratioDown);
+    if (xratioUp>ratioMax) ratioMax = xratioUp;
+    if (xratioDown>ratioMax) ratioMax = xratioDown;
+    if (xratioUp<ratioMin) ratioMin = xratioUp;
+    if (xratioDown<ratioMin) ratioMin = xratioDown;
     ratioUp->SetBinError(iB,0);
     ratioDown->SetBinError(iB,0);
     ratioCentral->SetBinContent(iB,1);
@@ -101,6 +191,9 @@ void PlotSys() {
     if (histNominal->GetBinContent(iB)>0)
       ratioCentral->SetBinError(iB,histNominal->GetBinError(iB)/histNominal->GetBinContent(iB));
   }
+  float diffMax = TMath::Abs(ratioMax-1.0);
+  float diffMin = TMath::Abs(ratioMin-1.0);
+  float diff = 1.1*TMath::Max(diffMax,diffMin);
 
   histUp->GetYaxis()->SetTitleOffset(1.4);
 
@@ -144,7 +237,7 @@ void PlotSys() {
   upper->Update();
   canv1->cd();
 
-  ratioUp->GetYaxis()->SetRangeUser(0.9,1.1);
+  ratioUp->GetYaxis()->SetRangeUser(1.0-diff,1.0+diff);
   ratioUp->GetYaxis()->SetNdivisions(505);
   ratioUp->GetXaxis()->SetLabelFont(42);
   ratioUp->GetXaxis()->SetLabelOffset(0.04);
@@ -196,7 +289,10 @@ void PlotSys() {
   canv1->Modified();
   canv1->cd();
 
+  if (outputPdf)
+    canv1->Print("figures_sysDNN/"+process+"_"+era+".pdf"+pageType,"pdf");
+  else
+    canv1->Print("figures_sysDNN/"+process+"_"+varName+"_"+sysName+"_"+era+".png");
 
-  canv1->Print("figures/"+varName+"_"+sysName+".png");
 
 } 

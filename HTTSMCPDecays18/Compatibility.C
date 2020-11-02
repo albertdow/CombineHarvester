@@ -1,9 +1,9 @@
 #include "HttStylesNew.cc"
 
-void Compatibility(TString WS = "etau_htt_bkg_et_saturated",
+void Compatibility(TString WS = "all_Oct23_v1_htt_et_mu0a1_13TeV_saturated",
 		   int bins = 60,
-		   float xmin =     0,
-		   float xmax =    60) {
+		   float xmin =     20,
+		   float xmax =    130) {
 
   SetStyle();
   gStyle->SetOptStat(0);
@@ -35,13 +35,7 @@ void Compatibility(TString WS = "etau_htt_bkg_et_saturated",
   for (int i=0; i<entries; ++i) {
     tree->GetEntry(i);
     chi2->Fill(float(limit));
-    if (limit>0&&limit<100) {
-      Entries += 1.0;
-    }
-    else 
-      negative += 1.0;
-    if (limit>xMax) xMax = limit;
-    if (limit<xMin) xMin = limit;
+    Entries += 1.0;
     if (limit>obs) {
       count += 1.0;
       chi2cut->Fill(float(limit));      
@@ -58,7 +52,7 @@ void Compatibility(TString WS = "etau_htt_bkg_et_saturated",
   std::cout << "Observed value of test-statistics = " << obs << std::endl;
   std::cout << "p-value = " << prob << std::endl;
   char probChar[5];
-  sprintf(probChar,"%4.2f",prob);
+  sprintf(probChar,"%4.2f",prob+0.02);
   TString probStr = TString("P(#chi^{2}>obs)=") + TString(probChar);
 
   float yMax = 0.6*chi2->GetMaximum();

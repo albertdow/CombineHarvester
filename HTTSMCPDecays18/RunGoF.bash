@@ -7,7 +7,7 @@
 
 rm -rf ${1}_${2}_${3}_files
 mkdir ${1}_${2}_${3}_files
-cp ./HTC_submit_short.sh ${1}_${2}_${3}_files/
+cp ./HTC_submit_medium.sh ${1}_${2}_${3}_files/
 cd ${1}_${2}_${3}_files
 combine -M GoodnessOfFit --setParameters muV=1,alpha=0,muggH=1,mutautau=1 -d ${CMSSW_BASE}/src/CombineHarvester/HTTSMCPDecays18/output/${1}/${2}/125/ws.root --cminDefaultMinimizerStrategy=0 -m 125 --algo ${3} -n _obs
 
@@ -25,6 +25,6 @@ cd ${CMSSW_BASE}/src/CombineHarvester/HTTSMCPDecays18/${1}_${2}_${3}_files/
 combine -M GoodnessOfFit --setParameters muV=1,alpha=0,muggH=1,mutautau=1 -d ${CMSSW_BASE}/src/CombineHarvester/HTTSMCPDecays18/output/${1}/${2}/125/ws.root --cminDefaultMinimizerStrategy=0 -m 125 --algo ${3} -n _toys_${i} -t $5 -s ${random}
 EOF2
     chmod u+x toys_${i}.sh
-    ./HTC_submit_short.sh toys_${i}.sh toys_${i}
+    ./HTC_submit_medium.sh toys_${i}.sh toys_${i}
 done
 cd ../
