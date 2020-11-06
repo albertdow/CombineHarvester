@@ -206,7 +206,7 @@ if args.translate is not None:
     if args.POI in name_translate:
         fixed_name = name_translate[args.POI]
 
-yvals = [1., 4.]
+yvals = [1., 3.84] #add 3.84 for 95,8.81 for the 99.7 % interval. In fit can do --do 95 as well
 if args.upper_cl is not None:
     yvals = [ROOT.Math.chisquared_quantile(args.upper_cl, 1)]
 
@@ -317,6 +317,9 @@ if args.POI == 'alpha':
   print 'max sigma = ', max_significance
   print 'best vs CP-odd sigma = ', ps_significance
 
+
+	
+
 for other in other_scans:
     if args.breakdown is not None:
         other['func'].SetLineStyle(2)
@@ -342,6 +345,7 @@ pads[0].GetFrame().Draw()
 pads[0].RedrawAxis()
 
 crossings = main_scan['crossings']
+
 val_nom = main_scan['val']
 val_2sig = main_scan['val_2sig']
 
@@ -547,6 +551,12 @@ outfile.WriteTObject(save_graph)
 outfile.Close()
 canv.Print('.pdf')
 canv.Print('.png')
+
+#merijn add
+print 'significance 68% CL ', val_nom[0], val_nom[1], val_nom[2] 
+print 'significance 95% CL (change code line 206) to get 99.7)', val_2sig[0], val_2sig[1], val_2sig[2] 
+print args.upper_cl
+print yvals
 
 meta = {}
 
